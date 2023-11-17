@@ -13,7 +13,7 @@ import json
 
 app = Flask(__name__)
 conexion = mysql.connector.connect(
-    user="salas", password="salas", host="localhost", database="incidencias", port="3306"
+    user="salas", password="salas", host="localhost", database="trabajoISS", port="3306"
 )
 
 cursor = conexion.cursor()
