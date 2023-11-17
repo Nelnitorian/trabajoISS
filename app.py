@@ -5,7 +5,7 @@ Created on Tue Nov  7 16:39:15 2023
 @author: imper
 """
 
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, send_from_directory, redirect
 from datetime import datetime  # Importa el módulo datetime
 import mysql.connector
 import json
@@ -21,9 +21,19 @@ cursor = conexion.cursor()
 incidencias = []
 
 
-@app.route("/hello", methods=["GET"])
-def hello_world():
-    return jsonify({"message": "Hola Mundo"})
+@app.route("/", methods=["GET"])
+def home():
+    return redirect("app")
+
+
+@app.route("/app", methods=["GET"])
+def main():
+    return send_from_directory("www", "index.html")
+
+
+@app.route('/app/<path:filename>', methods=["GET"])
+def serve_static(filename):
+    return send_from_directory('www', filename)
 
 
 @app.route("/incidencias", methods=["POST"])
