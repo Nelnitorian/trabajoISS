@@ -77,7 +77,7 @@ def crear_incidencia():
 @app.route("/incidencias", methods=["GET"])
 def obtener_incidencias():
     try:
-        conexion = get_db_connection
+        conexion = get_db_connection()
         cursor = conexion.cursor()
         cursor.execute("SELECT * FROM incidencias")
         resultados = cursor.fetchall()
@@ -98,7 +98,7 @@ def obtener_incidencias():
         close_db_connection(conexion, cursor)
 
     response = Response(
-        response=json.dumps(arreglo_json, sort_keys=False),
+        response=json.dumps([arreglo_json], sort_keys=False),
         status=200,
         mimetype="application/json",
     )
@@ -108,7 +108,7 @@ def obtener_incidencias():
 @app.route("/incidencias/<path:filename>", methods=["GET"])
 def obtener_incidencia(filename):
     try:
-        conexion = get_db_connection
+        conexion = get_db_connection()
         cursor = conexion.cursor()
         cursor.execute("SELECT * FROM incidencias WHERE id="+filename)
         resultados = cursor.fetchall()
@@ -136,17 +136,18 @@ def obtener_incidencia(filename):
     return response
 
 
-@app.route("/incidencias/id", methods=["PUT"])
-def actualizar_incidencia():
+@app.route("/incidencias/<path:filename>", methods=["PUT"])
+def actualizar_incidencia(filename):
     data = request.get_json()
 
     if not all(key in data for key in ["id"]):
         return jsonify({"error": "Se debe introducir el id para modificar la incidencia"}), 400
 
-    id = data["id"]
+    id = filename
+
     hora_cierre = datetime.now().strftime("%Y-%m-%d %H:&M:%S")
     try:
-        conexion = get_db_connection
+        conexion = get_db_connection()
         cursor = conexion.cursor()
         cursor.execute(
             "UPDATE incidencias SET fecha_cierre = %s WHERE id = %s",
@@ -162,17 +163,17 @@ def actualizar_incidencia():
     return jsonify({"message": "Incidencia actualizada con éxito"}), 200
 
 
-@app.route("/incidencias/id", methods=["DELETE"])
-def eliminar_incidencia():
+@app.route("/incidencias/<path:filename>", methods=["DELETE"])
+def eliminar_incidencia(filename):
     data = request.get_json()
 
     if not all(key in data for key in ["id"]):
         return jsonify({"error": "Se debe introducir el id para borrar la incidencia"}), 400
 
-    id = data["id"]
+    id = filename
 
     try:
-        conexion = get_db_connection
+        conexion = get_db_connection()
         cursor = conexion.cursor()
         cursor.execute("DELETE FROM incidencias WHERE id = %s", id)
         conexion.commit()
