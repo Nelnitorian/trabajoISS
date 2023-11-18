@@ -12,11 +12,21 @@ import json
 
 
 app = Flask(__name__)
-conexion = mysql.connector.connect(
-    user="salas", password="salas", host="localhost", database="trabajoISS", port="3306"
-)
 
-cursor = conexion.cursor()
+db_config = {
+    "user": "salas",
+    "password": "salas", 
+    "host": "localhost", 
+    "database": "trabajoISS",
+    "port": "3306",
+ }
+
+def get_db_connection():
+    return mysql.connector.connect(**db_config)
+
+def close_db_connection(connection, cursor):
+    cursor.close()
+    connection.close()
 
 incidencias = []
 
@@ -44,32 +54,48 @@ def crear_incidencia():
         return jsonify({"error": "Faltan campos obligatorios en la solicitud"}), 400
 
     hora_apertura = datetime.now().strftime(
-        "%Y-%m-%d"
+        "%Y-%m-%d %H:&M:%S"
     )  # Obtiene la hora actual y la formatea
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor()
+        query = """
+            INSERT INTO incidencias (nombre, numero_patin, causa, fecha_apertura, fecha_cierre)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        values = (data["Nombre"], data["numero_patin"], data["causa"], hora_apertura, None)
+        cursor.execute(query, values)
+        conexion.commit()
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Error al crear la incidencia: {err}"}), 500
+    finally:
+        close_db_connection(conexion, cursor)
 
-    cursor.execute(
-        "INSERT INTO incidencias (nombre, numero_patin, causa, fecha_apertura, fecha_cierre) VALUES (%s, %s, %s, %s, %s)",
-        (data["Nombre"], data["numero_patin"], data["causa"], hora_apertura, None),
-    )
-
-    conexion.commit()
     return jsonify({"message": "Incidencia creada con éxito"}), 201
 
 
 @app.route("/incidencias", methods=["GET"])
 def obtener_incidencias():
-    cursor.execute("SELECT * FROM incidencias")
-    resultados = cursor.fetchall()
+    try:
+        conexion = get_db_connection
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM incidencias")
+        resultados = cursor.fetchall()
 
-    # creamos un diccionario que contendrá todo
-    arreglo_json = {
-        "id": f"{resultados[0][0]}",
-        "nombre": f"{resultados[0][1]}",
-        "numero_patin": f"{resultados[0][2]}",
-        "causa": f"{resultados[0][3]}",
-        "fecha_apertura": f"{resultados[0][4]}",
-        "fecha_cierre": f"{resultados[0][5]}",
-    }
+        # creamos un diccionario que contendrá todo
+        arreglo_json = {
+            "id": f"{resultados[0][0]}",
+            "nombre": f"{resultados[0][1]}",
+            "numero_patin": f"{resultados[0][2]}",
+            "causa": f"{resultados[0][3]}",
+            "fecha_apertura": f"{resultados[0][4]}",
+            "fecha_cierre": f"{resultados[0][5]}",
+         }
+        
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Error al obtener las incidencias: {err}"}), 500
+    finally:
+        close_db_connection(conexion, cursor)
 
     response = Response(
         response=json.dumps(arreglo_json, sort_keys=False),
@@ -81,63 +107,83 @@ def obtener_incidencias():
 
 @app.route("/incidencias/<path:filename>", methods=["GET"])
 def obtener_incidencia(filename):
-    cursor.execute("SELECT * FROM incidencias WHERE id="+filename)
-    resultados = cursor.fetchall()
+    try:
+        conexion = get_db_connection
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM incidencias WHERE id="+filename)
+        resultados = cursor.fetchall()
 
-    # creamos un diccionario que contendrá todo
-    arreglo_json = {
-        "id": f"{resultados[0][0]}",
-        "nombre": f"{resultados[0][1]}",
-        "numero_patin": f"{resultados[0][2]}",
-        "causa": f"{resultados[0][3]}",
-        "fecha_apertura": f"{resultados[0][4]}",
-        "fecha_cierre": f"{resultados[0][5]}",
-    }
+        #  creamos un diccionario que contendrá todo
+        arreglo_json = {
+            "id": f"{resultados[0][0]}",
+            "nombre": f"{resultados[0][1]}",
+            "numero_patin": f"{resultados[0][2]}",
+            "causa": f"{resultados[0][3]}",
+            "fecha_apertura": f"{resultados[0][4]}",
+            "fecha_cierre": f"{resultados[0][5]}",
+        }
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Error al obtener las incidencias: {err}"}), 500
+    finally:
+        close_db_connection(conexion, cursor)
 
     response = Response(
         response=json.dumps(arreglo_json, sort_keys=False),
         status=200,
         mimetype="application/json",
-    )
+     )
 
     return response
 
 
-@app.route("/incidencias", methods=["PUT"])
+@app.route("/incidencias/id", methods=["PUT"])
 def actualizar_incidencia():
     data = request.get_json()
 
-    if not all(key in data for key in ["Nombre", "numero_patin"]):
-        return jsonify({"error": "Faltan campos obligatorios en la solicitud"}), 400
+    if not all(key in data for key in ["id"]):
+        return jsonify({"error": "Se debe introducir el id para modificar la incidencia"}), 400
 
-    nombre = data["Nombre"]
-    numero_patin = data["numero_patin"]
-    hora_cierre = datetime.now().strftime("%Y-%m-%d")
-
-    cursor.execute(
-        "UPDATE incidencias SET fecha_cierre = %s WHERE nombre = %s AND numero_patin= %s",
-        (hora_cierre, nombre, numero_patin),
-    )
-
-    # Confirmar la transacción para aplicar los cambios
-    conexion.commit()
+    id = data["id"]
+    hora_cierre = datetime.now().strftime("%Y-%m-%d %H:&M:%S")
+    try:
+        conexion = get_db_connection
+        cursor = conexion.cursor()
+        cursor.execute(
+            "UPDATE incidencias SET fecha_cierre = %s WHERE id = %s",
+            (hora_cierre, id),
+        )
+        # Confirmar la transacción para aplicar los cambios
+        conexion.commit()
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Error al obtener las incidencias: {err}"}), 500
+    finally:
+        close_db_connection(conexion, cursor)
+    
     return jsonify({"message": "Incidencia actualizada con éxito"}), 200
 
 
-@app.route("/incidencias", methods=["DELETE"])
+@app.route("/incidencias/id", methods=["DELETE"])
 def eliminar_incidencia():
     data = request.get_json()
 
-    if not all(key in data for key in ["Nombre", "numero_patin"]):
-        return jsonify({"error": "Faltan campos obligatorios en la solicitud"}), 400
+    if not all(key in data for key in ["id"]):
+        return jsonify({"error": "Se debe introducir el id para borrar la incidencia"}), 400
 
-    nombre = data["Nombre"]
-    numero_patin = data["numero_patin"]
+    id = data["id"]
+
+    try:
+        conexion = get_db_connection
+        cursor = conexion.cursor()
+        cursor.execute("DELETE FROM incidencias WHERE id = %s", id)
+        conexion.commit()
+    except mysql.connector.Error as err:
+        return jsonify({"error": f"Error al obtener las incidencias: {err}"}), 500
+    finally:
+        close_db_connection(conexion, cursor)
 
     for incidencia in incidencias:
         if (
-            incidencia["Nombre"] == nombre
-            and incidencia["numero_patin"] == numero_patin
+            incidencia["id"] == id
         ):
             incidencias.remove(incidencia)
             return jsonify({"message": "Incidencia eliminada con éxito"}), 200
@@ -155,5 +201,3 @@ def eliminar_incidencia():
 if __name__ == "__main__":
     app.run(debug=True)
 
-cursor.close()
-conexion.close()

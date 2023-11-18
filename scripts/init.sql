@@ -5,9 +5,9 @@ CREATE TABLE incidencias (
     nombre VARCHAR(50),
     numero_patin INT,
     causa VARCHAR(100),
-    fecha_apertura DATE,
-    fecha_cierre DATE
+    fecha_apertura DATETIME,
+    fecha_cierre DATETIME
 );
 
 INSERT INTO incidencias (id, nombre, numero_patin, causa, fecha_apertura, fecha_cierre) 
-VALUES (1, 'paco', 12, 'Fallo técnico', '2023-01-01', '2023-01-01');
+VALUES (1, 'paco', 12, 'Fallo técnico', '2023-01-01 12:12:12', '2023-01-01 23:23:23');
