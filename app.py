@@ -79,6 +79,29 @@ def obtener_incidencias():
 
     return response
 
+@app.route("/incidencias/<path:filename>", methods=["GET"])
+def obtener_incidencia(filename):
+    cursor.execute("SELECT * FROM incidencias WHERE id="+filename)
+    resultados = cursor.fetchall()
+
+    # creamos un diccionario que contendrá todo
+    arreglo_json = {
+        "id": f"{resultados[0][0]}",
+        "nombre": f"{resultados[0][1]}",
+        "numero_patin": f"{resultados[0][2]}",
+        "causa": f"{resultados[0][3]}",
+        "fecha_apertura": f"{resultados[0][4]}",
+        "fecha_cierre": f"{resultados[0][5]}",
+    }
+
+    response = Response(
+        response=json.dumps(arreglo_json, sort_keys=False),
+        status=200,
+        mimetype="application/json",
+    )
+
+    return response
+
 
 @app.route("/incidencias", methods=["PUT"])
 def actualizar_incidencia():
