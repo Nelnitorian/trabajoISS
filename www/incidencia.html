@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Información de la Incidencia</title>
+		<link rel="stylesheet" type="text/css" href="css/incidencia.css" />
+	</head>
+	<body>
+		<h1>Información de la Incidencia</h1>
+		<div id="datos">
+			<p>Identificador: <input id="identificador"></input></p>
+			<p>Nombre: <input id="nombre"></input></p>
+			<p>Número de patín: <input id="num_patin"></input></p>
+			<p>Causa: <input id="causa"></input></p>
+			<p>Fecha de apertura: <input id="fecha_apertura"></input></p>
+			<p>Fecha de cierre: <input id="fecha_cierre"></input></p>
+		</div>
+
+		<!-- Botón para volver a la página principal -->
+		<button onclick=back()>Volver</button>
+
+		<!-- Botón para editar la información del contacto -->
+		<button id="boton_eliminar" onclick="eliminar()">Eliminar</button>
+
+		<button id="boton_editar" onclick="editar()">Editar</button>
+
+		<button id="boton_actualizar" onclick="actualizar()">Actualizar</button>
+		<button id="boton_cancelar" onclick="cancelar()">Cancelar</button>
+
+		<script type="text/javascript" src="js/incidencia.js"></script>
+	</body>
+</html>

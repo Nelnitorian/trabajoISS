@@ -1,0 +1,55 @@
+/* Reset básico */
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Estilos para el encabezado */
+  h1 {
+    text-align: center;
+    color: #333;
+  }
+  
+  /* Estilos para los párrafos */
+  p {
+    text-align: center;
+    color: #666;
+  }
+  
+ /* Estilos para la lista de incidencias */
+#lista-incidencias {
+    list-style: none;
+    padding: 0;
+    text-align: center; /* Centrar los elementos de la lista */
+  }
+  
+  /* Estilos para los elementos li de la lista */
+  #lista-incidencias li {
+    margin: 5px 0;
+    padding: 8px 12px;
+    background-color: #f2f2f2;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  #lista-incidencias li:hover {
+    background-color: #e2e2e2;
+  }
+  
+  /* Estilos para el botón de añadir */
+  button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }

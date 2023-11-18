@@ -1,0 +1,75 @@
+/* Reset básico */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Estilos para el encabezado */
+h1 {
+  text-align: center;
+  color: #333;
+  font-size: 20px;
+}
+
+/* Estilos para los datos de la incidencia */
+#datos {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#datos p {
+  margin: 8px 0;
+  font-size: 20px;
+  color: #444;
+}
+
+#datos input {
+  font-weight: bold;
+}
+
+/* Estilos para los botones */
+button {
+  display: block;
+  margin: 10px auto;
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Estilos específicos para los botones de acción */
+button:nth-of-type(2) {
+  background-color: #e74c3c;
+  color: white;
+}
+
+button:nth-of-type(3) {
+  background-color: #3498db;
+  color: white;
+}
+
+button:nth-of-type(4) {
+  background-color: #2ecc71;
+  color: white;
+}
+
+button:nth-of-type(5) {
+  background-color: #e67e22;
+  color: white;
+}
+
+button:nth-of-type(6) {
+  background-color: #95a5a6;
+  color: white;
+}
