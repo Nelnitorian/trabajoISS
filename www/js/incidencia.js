@@ -4,8 +4,7 @@ const datos_ids = ["identificador", "nombre", "num_patin", "causa", "fecha_apert
 var datos_incidencia = []
 
 function mostrar(identificador, nombre, numero_patin, causa, fecha_apertura, fecha_cierre) {
-	// Función para mostrar la información del contacto en la página
-	document.getElementById("identificador").value = identificador;
+	document.getElementById("identificador").innerText = identificador;
 	document.getElementById("nombre").value = nombre;
 	document.getElementById("num_patin").value = numero_patin;
 	document.getElementById("causa").value = causa;
@@ -39,9 +38,9 @@ function actualizar() {
     var id = new URLSearchParams(location.search).get("id");
 
     const http = new XMLHttpRequest()
-    var params = obten_parametros()
+    var params = obten_parametros_actualizar()
     http.open("PUT", url_incidencias +id)
-    http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    http.setRequestHeader('Content-type', 'application/json');
 
     http.onreadystatechange = function(){
         if(this.readyState == 4 && this.status == 200){
@@ -60,15 +59,15 @@ function cancelar() {
 }
 
 function crear(){
+    console.log("pulsado crear")
     const http = new XMLHttpRequest()
-    var params = obten_parametros()
+    var params = obten_parametros_crear()
     http.open("POST", url_incidencias)
-    http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    http.setRequestHeader('Content-type', 'application/json');
 
     http.onreadystatechange = function(){
         if(this.readyState == 4 && this.status == 200){
-            alert("Se ha creado el contacto correctamente")
-            // Después de mandar la petición volvemos a la página inicial
+            alert("Se ha creado la incidencia correctamente")
             window.location.href="index.html";
         } else if(this.readyState == 4){
             alert("Se ha producido un error")
@@ -78,15 +77,36 @@ function crear(){
     http.send(params)
 }
 
-function obten_parametros(){
-    // Esta función se encarga de recoger los datos del formulario y crear los parámetros HTTP
+function obten_parametros_crear(){
 
     var nombre = document.getElementById("nombre").value;
-    var apellidos = document.getElementById("apellidos").value;
-    var numero = document.getElementById("numero").value;
-    var email = document.getElementById("email").value;
+    var num_patin = document.getElementById("num_patin").value;
+    var causa = document.getElementById("causa").value;
 
-    return "nombre="+nombre+"&apellidos="+apellidos+"&email="+email+"&tlf="+numero;
+    var jsonData = {
+        Nombre: nombre,
+        numero_patin: num_patin,
+        causa: causa
+    };
+
+    return JSON.stringify(jsonData);
+
+}
+
+function obten_parametros_actualizar(){
+
+    // var identificador = document.getElementById("identificador").innerText;
+    // var nombre = document.getElementById("nombre").value;
+    // var num_patin = document.getElementById("num_patin").value;
+    // var causa = document.getElementById("causa").value;
+	// var fecha_apertura = document.getElementById("fecha_apertura").value;
+	var fecha_cierre = document.getElementById("fecha_cierre").value;
+
+    var jsonData = {
+        fecha_cierre: fecha_cierre
+    };
+
+    return JSON.stringify(jsonData);
 
 }
 
@@ -95,28 +115,31 @@ function back(){
 }
 
 function cargaCreacion(){
-    cambiaVisiblidad(["boton_editar", "boton_cancelar", "boton_actualizar"], []);
+    cambiaDisplay(["identificador_p", "identificador", "fecha_apertura_p", "fecha_apertura", "fecha_cierre_p", "fecha_cierre"], 'none')
+    cambiaVisiblidad(["boton_editar", "boton_cancelar", "boton_actualizar", "boton_eliminar"], []);
     cambiaEnable(datos_ids, false)
 }
 
 function cargaEditar(){
-    cambiaVisiblidad(["boton_editar"], ["boton_cancelar", "boton_actualizar"]);
-    cambiaEnable(datos_ids, false)
+    cambiaVisiblidad(["boton_editar", "boton_crear"], ["boton_cancelar", "boton_actualizar"]);
+    // cambiaEnable(datos_ids, false)
+    cambiaEnable(["fecha_cierre"], false)
 }
 
 function cargaMostrar(){
-    cambiaVisiblidad(["boton_cancelar", "boton_actualizar"], ["boton_editar"]);
+    cambiaVisiblidad(["boton_cancelar", "boton_actualizar", "boton_crear"], ["boton_editar"]);
     cambiaEnable(datos_ids, true)
 }
 
 function cambiaVisiblidad(desaparecen=[], aparecen=[]){
-    for (var i = 0; i < desaparecen.length; i++){
-        var elemento = document.getElementById(desaparecen[i]);
-        elemento.style.display = 'none';
-    }
-    for (var i = 0; i < aparecen.length; i++){
-        var elemento = document.getElementById(aparecen[i]);
-        elemento.style.display = 'block';
+    cambiaDisplay(desaparecen, 'none')
+    cambiaDisplay(aparecen, 'block')
+}
+
+function cambiaDisplay(lst=[], value){
+    for (var i = 0; i < lst.length; i++){
+        var elemento = document.getElementById(lst[i]);
+        elemento.style.display = value;
     }
 }
 function cambiaEnable(elementos=[], estado){
