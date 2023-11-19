@@ -46,7 +46,7 @@ def serve_static(filename):
     return send_from_directory('www', filename)
 
 
-@app.route("/incidencias", methods=["POST"])
+@app.route("/incidencias/", methods=["POST"])
 def crear_incidencia():
     data = request.get_json()
 
@@ -74,7 +74,7 @@ def crear_incidencia():
     return jsonify({"message": "Incidencia creada con éxito"}), 201
 
 
-@app.route("/incidencias", methods=["GET"])
+@app.route("/incidencias/", methods=["GET"])
 def obtener_incidencias():
     try:
         conexion = get_db_connection()
@@ -165,10 +165,10 @@ def actualizar_incidencia(filename):
 
 @app.route("/incidencias/<path:filename>", methods=["DELETE"])
 def eliminar_incidencia(filename):
-    data = request.get_json()
+    #data = request.get_json()
 
-    if not all(key in data for key in ["id"]):
-        return jsonify({"error": "Se debe introducir el id para borrar la incidencia"}), 400
+    # if not all(key in data for key in ["id"]):
+    #     return jsonify({"error": "Se debe introducir el id para borrar la incidencia"}), 400
 
     id = filename
 
