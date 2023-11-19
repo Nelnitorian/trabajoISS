@@ -1,15 +1,16 @@
 const url_base = 'http://localhost:5000/'
 const url_incidencias = url_base+'incidencias/'
-const datos_ids = ["identificador", "nombre", "num_patin", "causa", "fecha_apertura", "fecha_cierre"]
+const datos_ids = ["identificador", "nombre", "num_patin", "causa", "fecha_apertura", "fecha_cierre", "cerrado"]
 var datos_incidencia = []
 
-function mostrar(identificador, nombre, numero_patin, causa, fecha_apertura, fecha_cierre) {
+function mostrar(identificador, nombre, numero_patin, causa, fecha_apertura, fecha_cierre, cerrado) {
 	document.getElementById("identificador").innerText = identificador;
-	document.getElementById("nombre").value = nombre;
-	document.getElementById("num_patin").value = numero_patin;
-	document.getElementById("causa").value = causa;
-	document.getElementById("fecha_apertura").value = fecha_apertura;
-	document.getElementById("fecha_cierre").value = fecha_cierre;
+	document.getElementById("nombre").innerText = nombre;
+	document.getElementById("num_patin").innerText = numero_patin;
+	document.getElementById("causa").innerText = causa;
+	document.getElementById("fecha_apertura").innerText = fecha_apertura;
+	document.getElementById("fecha_cierre").innerText = fecha_cierre;
+	document.getElementById("cerrado").checked = +cerrado;
 }
 
 function eliminar() {
@@ -20,7 +21,7 @@ function eliminar() {
 	const http = new XMLHttpRequest()
 	http.open("DELETE", url_incidencias+id)
 	http.onreadystatechange = function(){
-		if(this.readyState == 4 && this.status == 200){
+		if(this.readyState == 2 && this.status == 200){
             window.alert("Se ha borrado con éxito")
             back()
 		} else {
@@ -38,7 +39,7 @@ function actualizar() {
     var id = new URLSearchParams(location.search).get("id");
 
     const http = new XMLHttpRequest()
-    var params = obten_parametros_actualizar()
+    // var params = obten_parametros_actualizar()
     http.open("PUT", url_incidencias +id)
     http.setRequestHeader('Content-type', 'application/json');
 
@@ -50,7 +51,7 @@ function actualizar() {
             alert("Se ha producido un error")
         }
     }
-    http.send(params)
+    http.send()
 }
 
 function cancelar() {
@@ -59,16 +60,15 @@ function cancelar() {
 }
 
 function crear(){
-    console.log("pulsado crear")
     const http = new XMLHttpRequest()
     var params = obten_parametros_crear()
     http.open("POST", url_incidencias)
     http.setRequestHeader('Content-type', 'application/json');
 
     http.onreadystatechange = function(){
-        if(this.readyState == 4 && this.status == 200){
+        if(this.readyState == 4 && this.status == 201){
             alert("Se ha creado la incidencia correctamente")
-            window.location.href="index.html";
+            back()
         } else if(this.readyState == 4){
             alert("Se ha producido un error")
         }
@@ -84,7 +84,7 @@ function obten_parametros_crear(){
     var causa = document.getElementById("causa").value;
 
     var jsonData = {
-        Nombre: nombre,
+        nombre: nombre,
         numero_patin: num_patin,
         causa: causa
     };
@@ -111,7 +111,7 @@ function obten_parametros_actualizar(){
 }
 
 function back(){
-    window.history.back()
+    window.location.href = "/app"
 }
 
 function cargaCreacion(){
@@ -122,8 +122,10 @@ function cargaCreacion(){
 
 function cargaEditar(){
     cambiaVisiblidad(["boton_editar", "boton_crear"], ["boton_cancelar", "boton_actualizar"]);
-    // cambiaEnable(datos_ids, false)
-    cambiaEnable(["fecha_cierre"], false)
+    if (datos_incidencia[5]==="None"){
+        cambiaEnable(["cerrado"], false)
+    }
+
 }
 
 function cargaMostrar(){
@@ -165,7 +167,7 @@ window.addEventListener('load', function () {
 	http.onreadystatechange = function(){
 		if(this.readyState == 4 && this.status == 200){
 			var data = JSON.parse(this.responseText)
-            datos_incidencia = [data.id, data.nombre, data.numero_patin, data.causa, data.fecha_apertura, data.fecha_cierre]
+            datos_incidencia = [data.id, data.nombre, data.numero_patin, data.causa, data.fecha_apertura, data.fecha_cierre, data.cerrado]
 			mostrar(...datos_incidencia);
 		}
 	}

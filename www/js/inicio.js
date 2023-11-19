@@ -1,6 +1,7 @@
 function agregarIncidencia(){
-	window.location.href="/app/incidencia.html";
+	window.location.href="/app/crea.html";
 }
+
 
 window.addEventListener('load', function () {
   const url = 'http://localhost:5000/incidencias'
@@ -17,10 +18,13 @@ window.addEventListener('load', function () {
           var li = document.createElement("li");
           var enlace = document.createElement("a");
   
-          li.setAttribute("id", nombre);
-          li.addEventListener("click", function() {
-            window.location.href="/app/incidencia.html?id="+id;
-          });
+          li.setAttribute("id", nombre);  
+          (function(id) {
+            li.addEventListener("click", function(event) {
+              // Redirect to the specified URL when clicked
+              window.location.href = "/app/incidencia.html?id=" + id;
+            });
+          })(id);
           enlace.textContent = id;
   
           li.appendChild(enlace);
